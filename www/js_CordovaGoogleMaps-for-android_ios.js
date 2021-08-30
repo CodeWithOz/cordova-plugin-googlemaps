@@ -68,6 +68,12 @@ function CordovaGoogleMaps(execCmd) {
               if (node.nodeType !== Node.ELEMENT_NODE) {
                 return;
               }
+              if (Array.isArray(window.__excludeFromMap) && window.__excludeFromMap.length > 0) {
+                const selector = window.__excludeFromMap.join(',');
+                if (node.matches(selector)) {
+                  return;
+                }
+              }
               self.setDomId.call(self, node);
             });
           }
