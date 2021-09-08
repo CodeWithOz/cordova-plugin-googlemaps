@@ -73,7 +73,7 @@ function CordovaGoogleMaps(execCmd) {
                   window.__monitorOnMap.length > 0
               ) {
                   const selector = window.__monitorOnMap.join(',');
-                  if (!node.matches(selector)) {
+                  if (!node.closest(selector)) {
                       return;
                   }
               }
