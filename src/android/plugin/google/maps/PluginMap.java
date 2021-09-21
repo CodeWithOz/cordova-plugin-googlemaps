@@ -1722,6 +1722,9 @@ public class PluginMap extends MyPlugin implements OnMarkerClickListener,
           mCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
         }
       };
+      long unixTime = System.currentTimeMillis() / 1000L;
+      Log.d(TAG, "camera update time");
+      Log.d(TAG, String.valueOf(unixTime));
       if (mAction.equals("moveCamera")) {
         myMoveCamera(AsyncUpdateCameraPositionResult.cameraUpdate, myCallback);
       } else {
