@@ -65,9 +65,10 @@ function CordovaGoogleMaps(execCmd) {
           // If some elements are added, check them.
           if (mutation.addedNodes) {
             Array.prototype.slice.call(mutation.addedNodes, 0).forEach(function(node) {
-              if (node.nodeType !== Node.ELEMENT_NODE) {
-                return;
-              }
+                if (node.nodeType !== Node.ELEMENT_NODE) {
+                    return;
+                }
+                /*
               if (
                   Array.isArray(window.__monitorOnMap) &&
                   window.__monitorOnMap.length > 0
@@ -77,7 +78,8 @@ function CordovaGoogleMaps(execCmd) {
                       return;
                   }
               }
-              self.setDomId.call(self, node);
+              */
+                self.setDomId.call(self, node);
             });
           }
 
