@@ -29,14 +29,18 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
     // do not execute any methods on it.
     if (overlay._isRemoved && !execOptions.remove) {
         console.error(
-            '[ignore]' + pluginName + '.' + methodName + ', because removed.'
+            '[ignore]' +
+                pluginName +
+                '.' +
+                methodName +
+                ', because overlay is removed.'
         );
         _mapQueueLogs.push(
             `${new Date().toISOString()} [ignore]` +
                 pluginName +
                 '.' +
                 methodName +
-                ', because removed.'
+                ', because overlay is removed.'
         );
         return true;
     }
@@ -50,14 +54,14 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
                 pluginName +
                 '.' +
                 methodName +
-                ", because it's not ready."
+                ', because overlay is not ready in native.'
         );
         _mapQueueLogs.push(
             `${new Date().toISOString()} [ignore]` +
                 pluginName +
                 '.' +
                 methodName +
-                ", because it's not ready."
+                ', because overlay is not ready in native.'
         );
         return true;
     }
@@ -80,11 +84,11 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
                 // do not execute further code.
                 if (!_stopRequested && success) {
                     _mapQueueLogs.push(
-                        `${new Date().toISOString()} [ignore]` +
+                        `${new Date().toISOString()} [success]` +
                             pluginName +
                             '.' +
                             methodName +
-                            ", because it's not ready."
+                            ', stop not requested, scheduling callback in next tick.'
                     );
                     var results = Array.prototype.slice.call(arguments, 0);
                     common.nextTick(function () {
@@ -102,6 +106,13 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
                         _isWaitMethod === 'getMap' &&
                         Date.now() - _lastGetMapExecuted < 1500
                     ) {
+                        _mapQueueLogs.push(
+                            `${new Date().toISOString()} [success]` +
+                                pluginName +
+                                '.' +
+                                methodName +
+                                ', increasing delay.'
+                        );
                         delay = 1500;
                     }
                     _lastGetMapExecuted = Date.now();
@@ -120,6 +131,13 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
                     _isResizeMapExecuting = false;
                 }
                 if (!_stopRequested && error) {
+                    _mapQueueLogs.push(
+                        `${new Date().toISOString()} [error]` +
+                            pluginName +
+                            '.' +
+                            methodName +
+                            ', stop not requested, scheduling callback in next tick.'
+                    );
                     var results = Array.prototype.slice.call(arguments, 0);
                     common.nextTick(function () {
                         error.apply(overlay, results);
@@ -155,11 +173,15 @@ function execCmd(success, error, pluginName, methodName, args, execOptions) {
         commandQueue.length === 0
     ) {
         _mapQueueLogs.push(
-            `${new Date().toISOString()} [ignore]` +
+            `${new Date().toISOString()} [limit execCmd]` +
                 pluginName +
                 '.' +
                 methodName +
-                ', because queue is full.'
+                `, _isExecuting: ${_isExecuting}, _executingCnt >= MAX_EXECUTE_CNT: ${
+                    _executingCnt >= MAX_EXECUTE_CNT
+                }, _isWaitMethod: ${_isWaitMethod}, commandQueue.length === 0: ${
+                    commandQueue.length === 0
+                }.`
         );
         return;
     }
@@ -178,7 +200,11 @@ function _exec() {
         commandQueue.length === 0
     ) {
         _mapQueueLogs.push(
-            `${new Date().toISOString()} exiting _exec because queue is full`
+            `${new Date().toISOString()} [limit _exec] _isExecuting: ${_isExecuting}, _executingCnt >= MAX_EXECUTE_CNT: ${
+                _executingCnt >= MAX_EXECUTE_CNT
+            }, _isWaitMethod: ${_isWaitMethod}, commandQueue.length === 0: ${
+                commandQueue.length === 0
+            }.`
         );
         return;
     }
@@ -229,7 +255,9 @@ function _exec() {
         // Some methods have to block other execution requests, such as `map.clear()`
         if (commandParams.execOptions.sync) {
             _mapQueueLogs.push(
-                `${new Date().toISOString()} [blocking]` + methodName + '.'
+                `${new Date().toISOString()} [setting as wait]` +
+                    methodName +
+                    '.'
             );
             _isWaitMethod = methodName;
             cordova_exec.apply(this, commandParams.args);
