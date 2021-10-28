@@ -317,10 +317,10 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
               continue;
             }
             if (status == HttpURLConnection.HTTP_OK) {
-              Log.d("MapsPluginDebug", "=================== image download status is OK", e);
+              Log.d("MapsPluginDebug", "=================== image download status is OK");
               break;
             } else {
-              Log.d("MapsPluginDebug", "=================== image download status is not OK, exiting", e);
+              Log.d("MapsPluginDebug", "=================== image download status is not OK, exiting");
               return null;
             }
           } catch (Exception e) {
