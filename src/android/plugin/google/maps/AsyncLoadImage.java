@@ -390,9 +390,14 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         canvas.setMatrix(scaleMatrix);
 
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
-        canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-        myBitmap.recycle();
-        myBitmap = null;
+        if (myBitmap == null) {
+          Log.d("MapsPluginDebug", "=================== bitmap is null, neither drawing nor recycling");
+        } else {
+          Log.d("MapsPluginDebug", "=================== bitmap is not null, drawing and recycling");
+          canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+          myBitmap.recycle();
+          myBitmap = null;
+        }
         canvas = null;
         imageBytes = null;
 
