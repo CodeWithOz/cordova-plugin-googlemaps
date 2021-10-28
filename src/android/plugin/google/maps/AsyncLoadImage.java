@@ -102,7 +102,7 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
   @Override
   protected void onCancelled(AsyncLoadImageResult result) {
     super.onCancelled(result);
-    if (result == null) {
+    if (result == null || result.image == null) {
       return;
     }
 
