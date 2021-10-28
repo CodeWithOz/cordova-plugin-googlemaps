@@ -1147,8 +1147,9 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
           self.pluginMap.objects.remove(markerImgSizeTag);
           self.pluginMap.objects.put(markerImgSizeTag, imageSize);
 
-          result.image.recycle();
-          result.image = null;
+          // commented out due to https://github.com/mapsplugin/cordova-plugin-googlemaps/pull/2872#issuecomment-947683157
+          // result.image.recycle();
+          // result.image = null;
 
           // The `anchor` of the `icon` property
           if (iconProperty.containsKey("anchor")) {

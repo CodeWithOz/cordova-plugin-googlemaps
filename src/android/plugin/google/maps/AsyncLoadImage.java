@@ -297,6 +297,7 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
           // normally, 3xx is redirect
           try {
             int status = http.getResponseCode();
+            Log.d("MapsPluginDebug", String.format("=============== image download status = %d", status));
             if (status != HttpURLConnection.HTTP_OK) {
               if (status == HttpURLConnection.HTTP_MOVED_TEMP
                   || status == HttpURLConnection.HTTP_MOVED_PERM
@@ -316,11 +317,14 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
               continue;
             }
             if (status == HttpURLConnection.HTTP_OK) {
+              Log.d("MapsPluginDebug", "=================== image download status is OK", e);
               break;
             } else {
+              Log.d("MapsPluginDebug", "=================== image download status is not OK, exiting", e);
               return null;
             }
           } catch (Exception e) {
+            Log.e("MapsPluginDebug", "=================== error downloading bitmap", e);
             Log.e(TAG, "can not connect to " + iconUrl, e);
           }
         }
@@ -391,13 +395,13 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
 
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== bitmap is null, neither drawing nor recycling");
+          Log.d("MapsPluginDebug", "=================== bitmap is null");
         } else {
-          Log.d("MapsPluginDebug", "=================== bitmap is not null, drawing and recycling");
-          canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-          myBitmap.recycle();
-          myBitmap = null;
+          Log.d("MapsPluginDebug", "=================== bitmap is not null");
         }
+        canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+        myBitmap.recycle();
+        myBitmap = null;
         canvas = null;
         imageBytes = null;
 
