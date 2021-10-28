@@ -1,4 +1,4 @@
-console.log('changes v1');
+console.log('changes v2');
 
 var utils = require('cordova/utils'),
     cordova_exec = require('cordova/exec'),
