@@ -349,7 +349,13 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
 
         // The below line just checking the bitmap size (width,height).
         // Returned value is always null.
-        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+        Log.d("MapsPluginDebug", String.format("=============== imageBytes length for unused bitmap = %d", imageBytes.length));
+        Bitmap unusedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+        if (unusedBitmap == null) {
+          Log.d("MapsPluginDebug", "=================== unused bitmap is null");
+        } else {
+          Log.d("MapsPluginDebug", "=================== unused bitmap is not null");
+        }
 
         if (mWidth < 1 && mHeight < 1) {
           mWidth = options.outWidth;
@@ -393,11 +399,12 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Canvas canvas = new Canvas(scaledBitmap);
         canvas.setMatrix(scaleMatrix);
 
+        Log.d("MapsPluginDebug", String.format("=============== imageBytes length for used bitmap = %d", imageBytes.length));
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== bitmap is null");
+          Log.d("MapsPluginDebug", "=================== used bitmap is null");
         } else {
-          Log.d("MapsPluginDebug", "=================== bitmap is not null");
+          Log.d("MapsPluginDebug", "=================== used bitmap is not null");
         }
         canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
         myBitmap.recycle();
