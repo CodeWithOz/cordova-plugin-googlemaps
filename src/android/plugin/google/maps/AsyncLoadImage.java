@@ -333,9 +333,9 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Bitmap myBitmap = null;
         InputStream inputStream = http.getInputStream();
 
-        String contentEncoding = inputStream.getContentEncoding();
-        String contentType = inputStream.getContentType();
-        int contentLength = inputStream.getContentLength();
+        String contentEncoding = http.getContentEncoding();
+        String contentType = http.getContentType();
+        int contentLength = http.getContentLength();
         String mimeType = HttpURLConnection.guessContentTypeFromStream(inputStream);
         Log.d("MapsPluginDebug", "=================== output for iconUrl: " + iconUrl);
         Log.d("MapsPluginDebug", "=================== contentEncoding: " + contentEncoding);
