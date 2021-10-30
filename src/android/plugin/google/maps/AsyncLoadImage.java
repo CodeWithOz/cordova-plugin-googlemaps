@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.util.Base64;
+import android.util.Base64InputStream;
 import android.util.Log;
 
 import org.apache.cordova.CordovaInterface;
@@ -411,7 +413,14 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Log.d("MapsPluginDebug", String.format("=============== imageBytes length for used bitmap = %d", imageBytes.length));
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== used bitmap is null");
+          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying base64 decoding");
+          Base64InputStream base64InputStream = new Base64InputStream(inputStream, Base64.DEFAULT);
+          myBitmap = BitmapFactory.decodeStream(Base64InputStream, null, options);
+          if (myBitmap == null) {
+            Log.d("MapsPluginDebug", "=================== used bitmap is still null after base64 decoding");
+          } else {
+            Log.d("MapsPluginDebug", "=================== used bitmap is not null after base64 decoding");
+          }
         } else {
           Log.d("MapsPluginDebug", "=================== used bitmap is not null");
         }
