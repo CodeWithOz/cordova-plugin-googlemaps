@@ -333,6 +333,15 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Bitmap myBitmap = null;
         InputStream inputStream = http.getInputStream();
 
+        String contentEncoding = inputStream.getContentEncoding();
+        String contentType = inputStream.getContentType();
+        int contentLength = inputStream.getContentLength();
+        String mimeType = HttpURLConnection.guessContentTypeFromStream(inputStream);
+        Log.d("MapsPluginDebug", "=================== output for iconUrl: " + iconUrl);
+        Log.d("MapsPluginDebug", "=================== contentEncoding: " + contentEncoding);
+        Log.d("MapsPluginDebug", "=================== contentType: " + contentType);
+        Log.d("MapsPluginDebug", String.format("=============== content length: %d", contentLength));
+        Log.d("MapsPluginDebug", "=================== mimeType: " + mimeType);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[16384];
