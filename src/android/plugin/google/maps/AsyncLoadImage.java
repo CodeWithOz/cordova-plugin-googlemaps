@@ -10,13 +10,13 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.util.Base64;
-import android.util.Base64InputStream;
 import android.util.Log;
 
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaWebView;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -414,10 +414,17 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
           Log.d("MapsPluginDebug", "=================== used bitmap is null, trying base64 decoding");
-          Base64InputStream b64InputStream = new Base64InputStream(inputStream, Base64.DEFAULT);
-          myBitmap = BitmapFactory.decodeStream(b64InputStream, null, options);
+          String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+          InputStream strStream = new ByteArrayInputStream(Base64.decode(imageStr.getBytes(), Base64.DEFAULT));
+          myBitmap = BitmapFactory.decodeStream(strStream);
           if (myBitmap == null) {
-            Log.d("MapsPluginDebug", "=================== used bitmap is still null after base64 decoding");
+            Log.d("MapsPluginDebug", "=================== used bitmap is still null after base64 decoding, one last try");
+            myBitmap = BitmapFactory.decodeStream(strStream, null, options);
+            if (myBitmap == null) {
+              Log.d("MapsPluginDebug", "=================== used bitmap is still null after last try");
+            } else {
+              Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after last try");
+            }
           } else {
             Log.d("MapsPluginDebug", "=================== used bitmap is not null after base64 decoding");
           }
