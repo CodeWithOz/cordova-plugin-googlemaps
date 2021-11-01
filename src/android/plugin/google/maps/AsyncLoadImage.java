@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 
@@ -20,8 +21,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -419,8 +422,11 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         if (myBitmap == null) {
           Log.d("MapsPluginDebug", "=================== used bitmap is null, trying first decoding");
           byte [] decodedBytes = Base64.decode(imageBytes, Base64.DEFAULT);
+          Bitmap firstDecodeBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length, options);
+          saveBitmap(firstDecodeBitmap, String.format("first-decode-%d", System.currentTimeMillis()) + ".png");
           byte [] doubleDecodedBytes = Base64.decode(decodedBytes, Base64.DEFAULT);
           myBitmap = BitmapFactory.decodeByteArray(doubleDecodedBytes, 0, doubleDecodedBytes.length, options);
+          saveBitmap(myBitmap, String.format("second-decode-%d", System.currentTimeMillis()) + ".png");
           if (myBitmap == null) {
             Log.d("MapsPluginDebug", "=================== used bitmap is null, trying decoded");
             InputStream decodedStrStream = new ByteArrayInputStream(Base64.decode(decodedStr.getBytes(), Base64.DEFAULT));
@@ -617,6 +623,38 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
 
       return result;
     }
+  }
+
+  private void saveBitmap(Bitmap bitmap,String path){
+      if(bitmap!=null){
+          String decodedFileDirectory = Environment.getExternalStorageDirectory().getAbsolutePath() + 
+              "/Base64Decoded";
+          String fullPath = decodedFileDirectory + "/" + path;
+          Log.d("MapsPluginDebug", "=================== saving bitmap to path " + fullPath);
+          try {
+              FileOutputStream outputStream = null;
+              try {
+                  outputStream = new FileOutputStream(fullPath); //here is set your file path where you want to save or also here you can set file object directly
+
+                  bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // bitmap is your Bitmap instance, if you want to compress it you can compress reduce percentage
+                  // PNG is a lossless format, the compression factor (100) is ignored
+              } catch (Exception e) {
+                  e.printStackTrace();
+              } finally {
+                  try {
+                      if (outputStream != null) {
+                          outputStream.close();
+                      }
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      } else {
+          Log.d("MapsPluginDebug", "=================== bitmap is null for path " + path);
+      }
   }
 
 
