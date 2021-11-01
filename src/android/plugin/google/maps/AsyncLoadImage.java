@@ -425,6 +425,19 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
             myBitmap = BitmapFactory.decodeStream(strStream, null, options);
             if (myBitmap == null) {
               Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying with options");
+              InputStream decodedStrStream = new ByteArrayInputStream(Base64.decode(decodedStr.getBytes(), Base64.DEFAULT));
+              myBitmap = BitmapFactory.decodeStream(decodedStrStream);
+              if (myBitmap == null) {
+                Log.d("MapsPluginDebug", "=================== used bitmap is still null, trying decoded");
+                myBitmap = BitmapFactory.decodeStream(strStream, null, options);
+                if (myBitmap == null) {
+                  Log.d("MapsPluginDebug", "=================== used bitmap is still null, trying decoded with options");
+                } else {
+                  Log.d("MapsPluginDebug", "=================== used bitmap is finally finally not null after trying decoded with options");
+                }
+              } else {
+                Log.d("MapsPluginDebug", "=================== used bitmap is finally finally not null after trying decoded");
+              }
             } else {
               Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after trying with options");
             }
