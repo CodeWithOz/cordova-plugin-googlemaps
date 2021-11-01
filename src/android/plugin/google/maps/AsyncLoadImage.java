@@ -634,7 +634,12 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
           try {
               FileOutputStream outputStream = null;
               try {
-                  outputStream = new FileOutputStream(fullPath); //here is set your file path where you want to save or also here you can set file object directly
+                  File dir = new File(decodedFileDirectory);
+                  if(!dir.exists()) {
+                    dir.mkdirs();
+                  }
+                  File file = new File(dir, path);
+                  outputStream = new FileOutputStream(file); //here is set your file path where you want to save or also here you can set file object directly
 
                   bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // bitmap is your Bitmap instance, if you want to compress it you can compress reduce percentage
                   // PNG is a lossless format, the compression factor (100) is ignored
