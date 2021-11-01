@@ -411,38 +411,25 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         canvas.setMatrix(scaleMatrix);
 
         Log.d("MapsPluginDebug", String.format("=============== imageBytes length for used bitmap = %d", imageBytes.length));
+        String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        Log.d("MapsPluginDebug", "=================== used bitmap base64 string: " + imageStr);
+        String decodedStr = new String(imageBytes);
+        Log.d("MapsPluginDebug", "=================== used bitmap decoded base64 string: " + decodedStr);
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying base64 decoding");
-          String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-          Log.d("MapsPluginDebug", "=================== used bitmap base64 string:" + imageStr);
-          InputStream strStream = new ByteArrayInputStream(Base64.decode(imageStr.getBytes(), Base64.DEFAULT));
+          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying stream from bytes");
+          InputStream strStream = new ByteArrayInputStream(imageBytes);
           myBitmap = BitmapFactory.decodeStream(strStream);
           if (myBitmap == null) {
-            Log.d("MapsPluginDebug", "=================== used bitmap is still null after base64 decoding, one last try");
+            Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying stream from bytes");
             myBitmap = BitmapFactory.decodeStream(strStream, null, options);
             if (myBitmap == null) {
-              Log.d("MapsPluginDebug", "=================== used bitmap is still null after last try");
-              String imgSubString = imageStr.substring(imageStr.indexOf(",")+1);
-              Log.d("MapsPluginDebug", "=================== used bitmap base64 substring:" + imgSubString);
-              InputStream substringStream = new ByteArrayInputStream(Base64.decode(imgSubString.getBytes(), Base64.DEFAULT));
-              myBitmap = BitmapFactory.decodeStream(substringStream);
-              if (myBitmap == null) {
-                Log.d("MapsPluginDebug", "=================== used bitmap is still null after base64 substring decoding, one last try");
-                myBitmap = BitmapFactory.decodeStream(substringStream, null, options);
-                if (myBitmap == null) {
-                  Log.d("MapsPluginDebug", "=================== used bitmap is still null after last substring try");
-                } else {
-                  Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after last substring try");
-                }
-              } else {
-                Log.d("MapsPluginDebug", "=================== used bitmap is not null after decoding base64 substring");
-              }
+              Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying with options");
             } else {
-              Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after last try");
+              Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after trying with options");
             }
           } else {
-            Log.d("MapsPluginDebug", "=================== used bitmap is not null after base64 decoding");
+            Log.d("MapsPluginDebug", "=================== used bitmap is not null after trying stream from bytes");
           }
         } else {
           Log.d("MapsPluginDebug", "=================== used bitmap is not null");
