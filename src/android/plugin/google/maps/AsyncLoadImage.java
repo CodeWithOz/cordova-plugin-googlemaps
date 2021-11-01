@@ -417,32 +417,19 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Log.d("MapsPluginDebug", "=================== used bitmap decoded base64 string: " + decodedStr);
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying stream from bytes");
-          InputStream strStream = new ByteArrayInputStream(imageBytes);
-          myBitmap = BitmapFactory.decodeStream(strStream);
+          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying decoded");
+          InputStream decodedStrStream = new ByteArrayInputStream(Base64.decode(decodedStr.getBytes(), Base64.DEFAULT));
+          myBitmap = BitmapFactory.decodeStream(decodedStrStream);
           if (myBitmap == null) {
-            Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying stream from bytes");
+            Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying decoded");
             myBitmap = BitmapFactory.decodeStream(strStream, null, options);
             if (myBitmap == null) {
               Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying with options");
-              InputStream decodedStrStream = new ByteArrayInputStream(Base64.decode(decodedStr.getBytes(), Base64.DEFAULT));
-              myBitmap = BitmapFactory.decodeStream(decodedStrStream);
-              if (myBitmap == null) {
-                Log.d("MapsPluginDebug", "=================== used bitmap is still null, trying decoded");
-                myBitmap = BitmapFactory.decodeStream(strStream, null, options);
-                if (myBitmap == null) {
-                  Log.d("MapsPluginDebug", "=================== used bitmap is still null, trying decoded with options");
-                } else {
-                  Log.d("MapsPluginDebug", "=================== used bitmap is finally finally not null after trying decoded with options");
-                }
-              } else {
-                Log.d("MapsPluginDebug", "=================== used bitmap is finally finally not null after trying decoded");
-              }
             } else {
               Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after trying with options");
             }
           } else {
-            Log.d("MapsPluginDebug", "=================== used bitmap is not null after trying stream from bytes");
+            Log.d("MapsPluginDebug", "=================== used bitmap is not null after trying decoded");
           }
         } else {
           Log.d("MapsPluginDebug", "=================== used bitmap is not null");
