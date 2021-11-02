@@ -179,6 +179,8 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
     String orgIconUrl = iconUrl;
     Bitmap image = null;
 
+    Log.d("MapsPluginDebug", String.format("=================== iconUrl = %s", iconUrl));
+
     if (iconUrl == null) {
       return null;
     }
@@ -413,6 +415,7 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Canvas canvas = new Canvas(scaledBitmap);
         canvas.setMatrix(scaleMatrix);
 
+        Bitmap defaultImg = null;
         Log.d("MapsPluginDebug", String.format("=============== imageBytes length for used bitmap = %d", imageBytes.length));
         String imageStr = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         Log.d("MapsPluginDebug", "=================== used bitmap base64 string: " + imageStr);
@@ -420,26 +423,40 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Log.d("MapsPluginDebug", "=================== used bitmap decoded base64 string: " + decodedStr);
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying second decoding");
-          byte [] decodedBytes = Base64.decode(imageBytes, Base64.DEFAULT);
-          Log.d("MapsPluginDebug", String.format("=============== decodedBytes length for used bitmap = %d", decodedBytes.length));
-          myBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length, options);
-          if (myBitmap == null) {
-            Log.d("MapsPluginDebug", "=================== used bitmap is still null after second decoding");
+          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying the default");
+          AssetManager assetManager = cordova.getActivity().getAssets();
+          InputStream defaultImgInputStream = assetManager.open("www/img/profile_round_default.png");
+          if (defaultImgInputStream == null) {
+            Log.d("MapsPluginDebug", "=================== default image input stream is null");
           } else {
-            Log.d("MapsPluginDebug", "=================== used bitmap is not null after second decoding");
+            Log.d("MapsPluginDebug", "=================== default image input stream is not null, decoding");
+            defaultImg = BitmapFactory.decodeStream(defaultImgInputStream);
+            defaultImgInputStream.close();
+            if (mWidth > 0 && mHeight > 0) {
+              mWidth = Math.round(mWidth * density);
+              mHeight = Math.round(mHeight * density);
+              defaultImg = PluginUtil.resizeBitmap(defaultImg, mWidth, mHeight);
+            } else {
+              defaultImg = PluginUtil.scaleBitmapForDevice(defaultImg);
+            }
           }
         } else {
           Log.d("MapsPluginDebug", "=================== used bitmap is not null after first decoding");
         }
-        canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-        myBitmap.recycle();
+        if (defaultImg == null) {
+          canvas.drawBitmap(myBitmap, middleX - options.outWidth / 2, middleY - options.outHeight / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+          myBitmap.recycle();
+        }
         myBitmap = null;
         canvas = null;
         imageBytes = null;
 
         AsyncLoadImageResult result = new AsyncLoadImageResult();
-        result.image = scaledBitmap;
+        if (defaultImg == null) {
+          result.image = scaledBitmap;
+        } else {
+          result.image = defaultImg;
+        }
         result.cacheHit = false;
         if (!mOptions.noCaching) {
           result.cacheKey = cacheKey;
