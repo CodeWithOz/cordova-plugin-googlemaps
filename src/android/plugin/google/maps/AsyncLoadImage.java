@@ -420,26 +420,13 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         Log.d("MapsPluginDebug", "=================== used bitmap decoded base64 string: " + decodedStr);
         myBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         if (myBitmap == null) {
-          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying first decoding");
+          Log.d("MapsPluginDebug", "=================== used bitmap is null, trying second decoding");
           byte [] decodedBytes = Base64.decode(imageBytes, Base64.DEFAULT);
           myBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length, options);
           if (myBitmap == null) {
-            Log.d("MapsPluginDebug", "=================== used bitmap is null, trying decoded");
-            InputStream decodedStrStream = new ByteArrayInputStream(Base64.decode(decodedStr.getBytes(), Base64.DEFAULT));
-            myBitmap = BitmapFactory.decodeStream(decodedStrStream);
-            if (myBitmap == null) {
-              Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying decoded");
-              myBitmap = BitmapFactory.decodeStream(decodedStrStream, null, options);
-              if (myBitmap == null) {
-                Log.d("MapsPluginDebug", "=================== used bitmap is still null after trying with options");
-              } else {
-                Log.d("MapsPluginDebug", "=================== used bitmap is finally not null after trying with options");
-              }
-            } else {
-              Log.d("MapsPluginDebug", "=================== used bitmap is not null after trying decoded");
-            }
+            Log.d("MapsPluginDebug", "=================== used bitmap is still null after second decoding");
           } else {
-            Log.d("MapsPluginDebug", "=================== used bitmap is not null");
+            Log.d("MapsPluginDebug", "=================== used bitmap is not null after second decoding");
           }
         } else {
           Log.d("MapsPluginDebug", "=================== used bitmap is not null after first decoding");
