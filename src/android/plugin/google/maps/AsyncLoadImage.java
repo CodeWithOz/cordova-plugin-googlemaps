@@ -452,15 +452,18 @@ public class AsyncLoadImage extends AsyncTask<Void, Void, AsyncLoadImage.AsyncLo
         imageBytes = null;
 
         AsyncLoadImageResult result = new AsyncLoadImageResult();
+        Bitmap imgToCache = null;
         if (defaultImg == null) {
           result.image = scaledBitmap;
+          imgToCache = scaledBitmap;
         } else {
           result.image = defaultImg;
+          imgToCache = defaultImg;
         }
         result.cacheHit = false;
         if (!mOptions.noCaching) {
           result.cacheKey = cacheKey;
-          addBitmapToMemoryCache(cacheKey, scaledBitmap);
+          addBitmapToMemoryCache(cacheKey, imgToCache);
         }
 
         return result;
