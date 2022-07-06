@@ -121,7 +121,8 @@ function pluginInit() {
   //--------------------------------------------
   // Hook the backbutton of Android action
   //--------------------------------------------
-  var anotherBackbuttonHandler = null;
+  const backBtnHandlers = new Map();
+  // var anotherBackbuttonHandler = null;
 
   function onBackButton(e) {
 
@@ -130,6 +131,17 @@ function pluginInit() {
       force: true
     });
 
+    if (backBtnHandlers.size > 0) {
+      // invoke the registered handlers as many times as they've been registered
+      [...backBtnHandlers.entries()].forEach(([func, times]) => {
+        for (let index = 0; index < times; index++) {
+          func(e);
+        }
+      });
+    } else {
+      cordova_exec(null, null, 'CordovaGoogleMaps', 'backHistory', []);
+    }
+    /*
     if (anotherBackbuttonHandler) {
       // anotherBackbuttonHandler must handle the page moving transaction.
       // The plugin does not take care anymore if another callback is registered.
@@ -137,6 +149,7 @@ function pluginInit() {
     } else {
       cordova_exec(null, null, 'CordovaGoogleMaps', 'backHistory', []);
     }
+    */
   }
 
   document.addEventListener('backbutton', onBackButton);
@@ -149,9 +162,15 @@ function pluginInit() {
       _org_addEventListener.apply(this, args);
       return;
     }
+    // the func is the key and the value is the number of times the func has
+    // been registered
+    const times = (backBtnHandlers.get(callback) || 0) + 1;
+    backBtnHandlers.set(callback, times);
+    /*
     if (!anotherBackbuttonHandler) {
       anotherBackbuttonHandler = callback;
     }
+    */
   };
   document.removeEventListener = function (eventName, callback) {
     var args = Array.prototype.slice.call(arguments, 0);
@@ -159,9 +178,19 @@ function pluginInit() {
       _org_removeEventListener.apply(this, args);
       return;
     }
+    const times = (backBtnHandlers.get(callback) || 1) - 1;
+    if (times < 1) {
+      // stop invoking the handler entirely
+      backBtnHandlers.delete(callback);
+    } else {
+      // decrement the number of times this handler should be invoked
+      backBtnHandlers.set(callback, times);
+    }
+    /*
     if (anotherBackbuttonHandler === callback) {
       anotherBackbuttonHandler = null;
     }
+    */
   };
 
 }
